@@ -1,0 +1,11 @@
+{
+  "appId": "com.example.myapp",
+  "appName": "MyCapacitorApp",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

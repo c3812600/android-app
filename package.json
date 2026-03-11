@@ -1,0 +1,17 @@
+{
+  "name": "my-capacitor-app",
+  "version": "1.0.0",
+  "description": "Capacitor Android App",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step required for vanilla JS'",
+    "sync": "npx cap sync android",
+    "build:android": "npx cap build android",
+    "open:android": "npx cap open android"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/android": "^6.0.0"
+  }
+}
