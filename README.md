@@ -93,6 +93,53 @@ www/
 
 2. 修改 `.github/workflows/build-android.yml` 添加签名步骤
 
+### 沉浸式全屏适配
+
+本仓库已内置沉浸式全屏方案，解决状态栏可见与底部白边问题：
+
+1. 构建时由工作流写入 `MainActivity` 开启 Edge-to-Edge 并隐藏系统栏  
+   - 文件由 CI 在构建阶段生成：`android/app/src/main/java/<appId>/MainActivity.java`  
+   - 主要调用：
+     - `WindowCompat.setDecorFitsSystemWindows(window, false)`
+     - 使用 `WindowInsetsControllerCompat` 隐藏状态栏与导航栏，并允许手势短暂呼出
+2. `capacitor.config.json` 中设置颜色，避免透明导致的白底：
+   - `"statusBarColor": "#00000000"`（透明，内容延伸至状态栏）
+   - `"navigationBarColor": "#000000"`（纯黑，避免底部白边）
+3. Web 侧添加兜底背景色，避免透明时闪白：`body { background-color: #000 }`
+
+如需保留系统栏显示但仍支持内容延伸至边缘，可将隐藏系统栏的代码去掉，仅保留 `setDecorFitsSystemWindows(false)`，或在应用内根据场景动态控制。
+
+### 修改应用图标
+
+- 自动生成（推荐）
+  - 源文件位置（项目根目录）：`resources/icon.png` 或 `resources/icon.svg`（若存在 `resources/ico.svg` 会在 CI 中自动复制为 `icon.svg`）
+  - 要求：正方形、≥1024×1024、无圆角、透明背景、主体居中
+  - CI：工作流已自动执行生成步骤，无需手动命令
+  - 本地调试可用命令：
+    - `npm i -D @capacitor/assets`
+    - `npx capacitor-assets generate --android`
+  - 生成结果会写入 `android/app/src/main/res/mipmap-*` 与 `mipmap-anydpi-v26`（自适应图标）
+
+- 手动替换
+  - 文件路径（Android 项目内）：
+    - `android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml`
+    - `android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml`
+    - `android/app/src/main/res/mipmap-*/ic_launcher.png`
+    - `android/app/src/main/res/mipmap-*/ic_launcher_round.png`
+  - 命名：保持 `ic_launcher` 与 `ic_launcher_round` 不变
+  - 格式：PNG（建议带透明通道）；也可在 `ic_launcher.xml` 中引用前景/背景图层
+  - 尺寸（传统位图密度）：
+    - mdpi: 48×48
+    - hdpi: 72×72
+    - xhdpi: 96×96
+    - xxhdpi: 144×144
+    - xxxhdpi: 192×192
+  - 自适应图标（Android 8.0+）建议：
+    - 采用“前景 + 背景”两层，前景元素置于安全区内，背景可纯色或纹理
+    - 建议从 1024×1024 源图导出前景/背景，避免超出裁剪蒙版
+
+提示：若仓库未提交 `android/` 目录（由 CI 动态生成），可在工作流里先运行上面的 `@capacitor/assets` 命令或复制预置的 `res` 资源后再执行构建。
+
 ## 📧 自动通知（可选）
 
 ### 发送到钉钉

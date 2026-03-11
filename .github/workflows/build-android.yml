@@ -20,6 +20,7 @@ jobs:
       run: |
         npm install
         npm install @capacitor/cli @capacitor/core @capacitor/android --save-dev
+        npm install @capacitor/assets --save-dev
     
     - uses: actions/setup-java@v4
       with:
@@ -31,6 +32,9 @@ jobs:
     - name: Build APK
       run: |
         npx cap add android || true
+        mkdir -p resources
+        if [ ! -f resources/icon.png ] && [ ! -f resources/icon.svg ] && [ -f resources/ico.svg ]; then cp resources/ico.svg resources/icon.svg; fi
+        npx capacitor-assets generate --android || true
         npx cap sync android
         PACKAGE_DIR="android/app/src/main/java/com/example/myapp"
         mkdir -p "$PACKAGE_DIR"
