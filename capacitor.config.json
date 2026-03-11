@@ -10,7 +10,7 @@
   },
   "android": {
     "statusBarColor": "#00000000",
-    "navigationBarColor": "#00000000",
+    "navigationBarColor": "#000000",
     "statusBarStyle": "dark",
     "allowMixedContent": true
   }
