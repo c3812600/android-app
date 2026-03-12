@@ -12,6 +12,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -65,11 +66,24 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn:focus,
+        .btn:focus-visible {
+            outline: none;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.18);
         }
         
         .info {
