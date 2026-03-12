@@ -408,7 +408,6 @@
                 var opts = {};
                 if (window.VILLA_WS_URL) opts.wsUrl = window.VILLA_WS_URL;
                 if (window.BUTTON_HEX) opts.config = window.BUTTON_HEX;
-                if (!opts.config) opts.configUrl = 'assets/button_hex.json';
                 window.VillaControl.initWsControls(opts);
             }
         });

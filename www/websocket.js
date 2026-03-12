@@ -112,10 +112,60 @@ function loadJson(url) {
 
 function initVillaWsControls(options) {
     var wsUrl = (options && options.wsUrl) || window.VILLA_WS_URL;
-    var configUrl = (options && options.configUrl) || 'assets/button_hex.json';
+    var configUrl = (options && options.configUrl) || null;
 
     var manager = new WebSocketManager(wsUrl);
     var inputs = Array.prototype.slice.call(document.querySelectorAll('input[type="checkbox"][data-button-id]'));
+
+    function attachAllSync() {
+        var allEl = null;
+        var others = [];
+        for (var i = 0; i < inputs.length; i++) {
+            var el = inputs[i];
+            var id = el.getAttribute('data-button-id');
+            if (id === 'allLights') allEl = el;
+            else others.push(el);
+        }
+        if (!allEl) return;
+        var syncing = false;
+        function setChecked(el, val, fire) {
+            if (el.checked === val) return;
+            el.checked = val;
+            if (fire) {
+                try {
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch (_) {
+                    var evt = document.createEvent('Event');
+                    evt.initEvent('change', true, true);
+                    el.dispatchEvent(evt);
+                }
+            }
+        }
+        allEl.addEventListener('change', function () {
+            if (syncing) return;
+            syncing = true;
+            var val = allEl.checked;
+            for (var j = 0; j < others.length; j++) {
+                setChecked(others[j], val, false);
+            }
+            syncing = false;
+        });
+        for (var k = 0; k < others.length; k++) {
+            (function (el) {
+                el.addEventListener('change', function () {
+                    if (syncing) return;
+                    var allOn = true;
+                    var allOff = true;
+                    for (var m = 0; m < others.length; m++) {
+                        if (!others[m].checked) allOn = false;
+                        if (others[m].checked) allOff = false;
+                    }
+                    if (allOn && !allEl.checked) setChecked(allEl, true, false);
+                    else if (allOff && allEl.checked) setChecked(allEl, false, false);
+                });
+            })(others[k]);
+        }
+    }
 
     function setEnabled(enabled) {
         for (var i = 0; i < inputs.length; i++) {
@@ -142,6 +192,7 @@ function initVillaWsControls(options) {
             })(inputs[iA]);
         }
         setEnabled(true);
+        attachAllSync();
     } else {
         loadJson(configUrl).then(function (cfg) {
             var map = (cfg && cfg.buttons) || {};
@@ -159,6 +210,7 @@ function initVillaWsControls(options) {
                 })(inputs[i]);
             }
             setEnabled(true);
+            attachAllSync();
         }).catch(function (err) {
             if (typeof window !== 'undefined' && window.BUTTON_HEX && window.BUTTON_HEX.buttons) {
                 var mapB = window.BUTTON_HEX.buttons;
@@ -176,6 +228,7 @@ function initVillaWsControls(options) {
                     })(inputs[j]);
                 }
                 setEnabled(true);
+                attachAllSync();
             } else {
                 console.error('加载按钮 HEX 配置失败:', err);
                 setEnabled(false);
