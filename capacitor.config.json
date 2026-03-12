@@ -13,5 +13,9 @@
     "navigationBarColor": "#000000",
     "statusBarStyle": "dark",
     "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
   }
 }
