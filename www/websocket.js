@@ -1,5 +1,5 @@
 class WebSocketManager {
-    constructor(url = 'ws://192.168.18.119:1880') {
+    constructor(url = 'ws://192.168.18.252:81') {
         this.url = url;
         this.ws = null;
         this.reconnectTimer = null;
@@ -10,7 +10,7 @@ class WebSocketManager {
         try {
             this.updateConnectionStatus('connecting');
             this.ws = new WebSocket(this.url);
-            this.ws.binaryType = 'arraybuffer';
+            // this.ws.binaryType = 'arraybuffer';
             
             this.ws.onopen = () => {
                 console.log('WebSocket 连接已建立');
@@ -187,7 +187,7 @@ function initVillaWsControls(options) {
                         console.warn('未找到按钮 HEX 配置:', id);
                         return;
                     }
-                    manager.sendHex(el.checked ? item.on : item.off);
+                    manager.sendMessage(el.checked ? item.on : item.off);
                 });
             })(inputs[iA]);
         }
@@ -205,7 +205,7 @@ function initVillaWsControls(options) {
                             console.warn('未找到按钮 HEX 配置:', id);
                             return;
                         }
-                        manager.sendHex(el.checked ? item.on : item.off);
+                        manager.sendMessage(el.checked ? item.on : item.off);
                     });
                 })(inputs[i]);
             }
@@ -223,7 +223,7 @@ function initVillaWsControls(options) {
                                 console.warn('未找到按钮 HEX 配置:', id);
                                 return;
                             }
-                            manager.sendHex(el.checked ? item.on : item.off);
+                            manager.sendMessage(el.checked ? item.on : item.off);
                         });
                     })(inputs[j]);
                 }
