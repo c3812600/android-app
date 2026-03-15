@@ -184,7 +184,7 @@ const char index_html[] PROGMEM = R"raw(
 <head>
   <meta charset='utf-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ESP32 配置</title>
+  <title>网络配置</title>
   <style>
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;padding:20px;background-color:#f5f5f5;color:#333;}
     .container{max_width:600px;margin:0 auto;background-color:white;padding:30px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
@@ -203,7 +203,7 @@ const char index_html[] PROGMEM = R"raw(
 </head>
 <body>
   <div class='container'>
-    <h1>ESP32 网络配置</h1>
+    <h1>网络配置</h1>
     <form action='/save' method='POST'>
       <div class="form-group">
         <label>WiFi 名称 (SSID)</label>
@@ -273,8 +273,8 @@ void handleSave() {
   }
 }
 
-// 处理重置请求
-void handleReset() {
+// 执行恢复出厂设置的核心逻辑
+void performFactoryReset() {
   preferences.begin("config", false);
   preferences.clear(); // 清除所有保存的配置
   preferences.end();
@@ -284,10 +284,19 @@ void handleReset() {
   preferences.clear();
   preferences.end();
   
-  String html = "<html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='text-align:center;padding-top:50px;font-family:sans-serif;'><h1>已重置为默认配置!</h1><p>设备正在重启...</p><script>setTimeout(function(){location.href='/';}, 5000);</script></body></html>";
-  server.send(200, "text/html", html);
   delay(500);
   ESP.restart();
+}
+
+// 处理重置请求 (Web端)
+void handleReset() {
+  String html = "<html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='text-align:center;padding-top:50px;font-family:sans-serif;'><h1>已重置为默认配置!</h1><p>设备正在重启...</p><script>setTimeout(function(){location.href='/';}, 5000);</script></body></html>";
+  server.send(200, "text/html", html);
+  
+  // 稍等片刻让网页发送完毕
+  delay(500);
+  
+  performFactoryReset();
 }
 
 // 启动 OTA 功能
@@ -417,8 +426,8 @@ void loop() {
           setRelays(0x00); delay(200);
         }
         
-        // 调用重置函数
-        handleReset();
+        // 调用重置函数 (不发网页，直接清除并重启)
+        performFactoryReset();
       }
     }
   } else {
