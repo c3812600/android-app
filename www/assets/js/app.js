@@ -189,11 +189,7 @@ window.toggleMaster = function() {
     state.toggleItems.forEach(item => { item.isOn = false; });
     sendCommand('master', 'off');
   } else {
-    state.dualItems.forEach(item => {
-      if (item.current === null) {
-        item.current = 'static';
-      }
-    });
+    state.dualItems.forEach(item => { item.current = 'static'; });
     state.toggleItems.forEach(item => { item.isOn = true; });
     sendCommand('master', 'on');
   }
