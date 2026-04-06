@@ -10,7 +10,6 @@ class WebSocketManager {
         try {
             this.updateConnectionStatus('connecting');
             this.ws = new WebSocket(this.url);
-            // this.ws.binaryType = 'arraybuffer';
             
             this.ws.onopen = () => {
                 console.log('WebSocket 连接已建立');
@@ -20,7 +19,6 @@ class WebSocketManager {
             this.ws.onclose = () => {
                 console.log('WebSocket 连接已关闭');
                 this.updateConnectionStatus('disconnected');
-                // 3秒后尝试重连
                 if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
                 this.reconnectTimer = setTimeout(() => this.init(), 3000);
             };
@@ -41,10 +39,32 @@ class WebSocketManager {
 
     updateConnectionStatus(state) {
         const statusElement = document.getElementById('connectionStatus');
+        const headerStatusElement = document.getElementById('headerConnectionStatus');
         if (statusElement) {
             statusElement.classList.remove('connected', 'disconnected', 'connecting');
             statusElement.classList.add(state);
-            statusElement.title = state === 'connected' ? '连接已建立' : state === 'connecting' ? '正在连接' : '连接断开';
+            if (state === 'connected') {
+                statusElement.innerText = '系统状态: 已连接';
+                statusElement.style.color = '#4cb050';
+            } else if (state === 'connecting') {
+                statusElement.innerText = '系统状态: 连接中...';
+                statusElement.style.color = '#f59e0b';
+            } else {
+                statusElement.innerText = '系统状态: 已断开';
+                statusElement.style.color = '#ef4444';
+            }
+        }
+        if (headerStatusElement) {
+            if (state === 'connected') {
+                headerStatusElement.style.backgroundColor = '#4cb050';
+                headerStatusElement.setAttribute('aria-label', '已连接');
+            } else if (state === 'connecting') {
+                headerStatusElement.style.backgroundColor = '#f59e0b';
+                headerStatusElement.setAttribute('aria-label', '连接中');
+            } else {
+                headerStatusElement.style.backgroundColor = '#ef4444';
+                headerStatusElement.setAttribute('aria-label', '已断开');
+            }
         }
     }
 

@@ -1,0 +1,58 @@
+ .switch-bg {
+   transition: background-color 0.3s;
+ }
+ .switch-knob {
+   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+ }
+ .switch-on .switch-knob,
+ .switch-dynamic .switch-knob {
+   transform: translateX(40px);
+ }
+ .icon-wrapper {
+   transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+ }
+ .glass-card {
+   backdrop-filter: blur(24px);
+   -webkit-backdrop-filter: blur(24px);
+   background-color: rgba(255, 255, 255, 0.3);
+   border: 1px solid rgba(255, 255, 255, 0.4);
+   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+   border-radius: 1.5rem;
+ }
+ html,
+ body {
+   background-color: #000;
+ }
+ body {
+   background-image: url('../images/background.jpg');
+ }
+ @keyframes fadeInDown {
+   from {
+     opacity: 0;
+     transform: translateY(-20px);
+   }
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
+ @keyframes zoomIn {
+   from {
+     opacity: 0;
+     transform: scale(0.95);
+   }
+   to {
+     opacity: 1;
+     transform: scale(1);
+   }
+ }
+ @keyframes fadeInUp {
+   from {
+     opacity: 0;
+     transform: translateY(20px);
+   }
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }

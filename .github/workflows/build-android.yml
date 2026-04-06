@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Mobile Artifacts
 
 on:
   push:
@@ -6,40 +6,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_android:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - uses: actions/setup-node@v4
       with:
         node-version: '20'
-    
+        cache: 'npm'
+
     - name: Install dependencies
-      run: |
-        npm install
-        npm install @capacitor/cli @capacitor/core @capacitor/android --save-dev
-        npm install @capacitor/assets --save-dev
-    
+      run: npm install
+
     - uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-    
+
     - uses: android-actions/setup-android@v3
-    
+
     - name: Build APK
+      shell: bash
       run: |
+        set -e
         npx cap add android || true
         mkdir -p resources
         if [ ! -f resources/icon.png ] && [ ! -f resources/icon.svg ] && [ -f resources/ico.svg ]; then cp resources/ico.svg resources/icon.svg; fi
         npx capacitor-assets generate --android || true
         npx cap sync android
-        PACKAGE_DIR="android/app/src/main/java/com/example/myapp"
+        APP_ID=$(node -p "require('./capacitor.config.json').appId")
+        PACKAGE_DIR="android/app/src/main/java/$(echo "$APP_ID" | tr '.' '/')"
         mkdir -p "$PACKAGE_DIR"
-        cat > "$PACKAGE_DIR/MainActivity.java" << 'EOF'
-        package com.example.myapp;
+        cat > "$PACKAGE_DIR/MainActivity.java" <<EOF
+        package $APP_ID;
 
         import android.os.Bundle;
         import com.getcapacitor.BridgeActivity;
@@ -62,13 +63,62 @@ jobs:
         }
         EOF
         cd android && ./gradlew assembleDebug
-    
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: android-apk
         path: android/app/build/outputs/apk/debug/*.apk
-    
+
+  export_ios_project:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Export iOS project
+      shell: bash
+      run: |
+        set -e
+        npx cap add ios || true
+        mkdir -p resources
+        if [ ! -f resources/icon.png ] && [ ! -f resources/icon.svg ] && [ -f resources/ico.svg ]; then cp resources/ico.svg resources/icon.svg; fi
+        npx capacitor-assets generate --ios || true
+        npx cap sync ios
+        INFO_PLIST="ios/App/App/Info.plist"
+        /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity" "$INFO_PLIST" || true
+        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$INFO_PLIST"
+        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$INFO_PLIST"
+        xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+    - name: Upload iOS project
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-xcode-project
+        path: ios
+
+  notify:
+    needs:
+    - build_android
+    - export_ios_project
+    if: ${{ success() && secrets.NOTIFY_EMAIL != '' && secrets.EMAIL_USERNAME != '' && secrets.EMAIL_PASSWORD != '' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Android APK
+      uses: actions/download-artifact@v4
+      with:
+        name: android-apk
+        path: artifacts/android-apk
+
     - name: Send Email
       uses: dawidd6/action-send-mail@v3
       with:
@@ -76,7 +126,11 @@ jobs:
         server_port: 587
         username: ${{ secrets.EMAIL_USERNAME }}
         password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: "APK 构建完成"
+        subject: "Android APK 与 iOS 工程构建完成"
         to: ${{ secrets.NOTIFY_EMAIL }}
         from: ${{ secrets.EMAIL_USERNAME }}
-        attachments: android/app/build/outputs/apk/debug/app-debug.apk
+        body: |
+          Android APK 和 iOS Xcode 工程已生成。
+          Android APK 已作为邮件附件发送。
+          iOS 工程请到本次 GitHub Actions 的 Artifacts 下载 ios-xcode-project。
+        attachments: artifacts/android-apk/app-debug.apk

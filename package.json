@@ -5,13 +5,19 @@
   "main": "index.js",
   "scripts": {
     "build": "echo 'No build step required for vanilla JS'",
-    "sync": "npx cap sync android",
+    "sync": "npx cap sync",
+    "sync:android": "npx cap sync android",
+    "sync:ios": "npx cap sync ios",
     "build:android": "npx cap build android",
-    "open:android": "npx cap open android"
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios",
+    "export:ios": "npx cap sync ios && npx cap open ios"
   },
   "devDependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
     "@capacitor/core": "^6.0.0",
-    "@capacitor/android": "^6.0.0"
+    "@capacitor/ios": "^6.0.0"
   }
 }
