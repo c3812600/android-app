@@ -104,33 +104,3 @@ jobs:
       with:
         name: ios-xcode-project
         path: ios
-
-  notify:
-    needs:
-    - build_android
-    - export_ios_project
-    if: ${{ success() && secrets.NOTIFY_EMAIL != '' && secrets.EMAIL_USERNAME != '' && secrets.EMAIL_PASSWORD != '' }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download Android APK
-      uses: actions/download-artifact@v4
-      with:
-        name: android-apk
-        path: artifacts/android-apk
-
-    - name: Send Email
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.qq.com
-        server_port: 587
-        username: ${{ secrets.EMAIL_USERNAME }}
-        password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: "Android APK 与 iOS 工程构建完成"
-        to: ${{ secrets.NOTIFY_EMAIL }}
-        from: ${{ secrets.EMAIL_USERNAME }}
-        body: |
-          Android APK 和 iOS Xcode 工程已生成。
-          Android APK 已作为邮件附件发送。
-          iOS 工程请到本次 GitHub Actions 的 Artifacts 下载 ios-xcode-project。
-        attachments: artifacts/android-apk/app-debug.apk
