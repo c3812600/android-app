@@ -171,8 +171,9 @@ window.toggleDual = function(id) {
 window.toggleSingle = function(id) {
   const item = state.toggleItems.find(i => i.id === id);
   if (item) {
-    item.isOn = !item.isOn;
-    sendCommand(item.id, item.isOn ? 'on' : 'off');
+    // 强制设置为开，不用关的逻辑
+    item.isOn = true;
+    sendCommand(item.id, 'on');
     updateUI();
   }
 };
