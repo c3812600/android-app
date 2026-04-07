@@ -28,10 +28,13 @@ function initialRender() {
           </div>
         </div>
         
-        <div id="master-switch-container" onclick="toggleMaster()" class="relative w-20 h-10 bg-white/40 rounded-full cursor-pointer p-1 shadow-inner overflow-hidden border border-white/20">
-          <div id="master-switch-text" class="switch-knob w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-[10px] font-bold text-gray-600">
-            全亮
-          </div>
+        <div class="flex items-center gap-3">
+          <button onclick="turnAllOn()" class="px-6 py-2.5 bg-[#2096f3] hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-blue-400">
+            <i data-lucide="sun" class="w-5 h-5"></i> 全亮
+          </button>
+          <button onclick="turnAllOff()" class="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-gray-400">
+            <i data-lucide="moon" class="w-5 h-5"></i> 全暗
+          </button>
         </div>
       </div>
     </div>
@@ -94,17 +97,11 @@ function updateUI() {
                   state.toggleItems.every(item => item.isOn === true);
 
   const masterIcon = document.getElementById('master-icon');
-  const masterContainer = document.getElementById('master-switch-container');
-  const masterText = document.getElementById('master-switch-text');
 
   if (isAllOn) {
     masterIcon.className = 'icon-wrapper p-4 rounded-2xl bg-blue-500 text-white shadow-lg shadow-blue-500/30';
-    masterContainer.className = 'relative w-20 h-10 rounded-full cursor-pointer p-1 shadow-inner overflow-hidden border transition-colors duration-300 bg-[#2096f3] border-[#1e88e5] switch-on';
-    masterText.innerText = '全亮';
   } else {
     masterIcon.className = 'icon-wrapper p-4 rounded-2xl bg-white/40 text-gray-600';
-    masterContainer.className = 'relative w-20 h-10 rounded-full cursor-pointer p-1 shadow-inner overflow-hidden border transition-colors duration-300 bg-white/40 border-white/20';
-    masterText.innerText = '全暗';
   }
 
   state.dualItems.forEach(item => {
@@ -180,19 +177,17 @@ window.toggleSingle = function(id) {
   }
 };
 
-window.toggleMaster = function() {
-  const isAllOn = state.dualItems.every(item => item.current !== null) &&
-                  state.toggleItems.every(item => item.isOn === true);
+window.turnAllOn = function() {
+  state.dualItems.forEach(item => { item.current = 'static'; });
+  state.toggleItems.forEach(item => { item.isOn = true; });
+  sendCommand('master', 'on');
+  updateUI();
+};
 
-  if (isAllOn) {
-    state.dualItems.forEach(item => { item.current = null; });
-    state.toggleItems.forEach(item => { item.isOn = false; });
-    sendCommand('master', 'off');
-  } else {
-    state.dualItems.forEach(item => { item.current = 'static'; });
-    state.toggleItems.forEach(item => { item.isOn = true; });
-    sendCommand('master', 'on');
-  }
+window.turnAllOff = function() {
+  state.dualItems.forEach(item => { item.current = null; });
+  state.toggleItems.forEach(item => { item.isOn = false; });
+  sendCommand('master', 'off');
   updateUI();
 };
 

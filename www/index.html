@@ -42,16 +42,19 @@
                   <i data-lucide="power" class="w-8 h-8"></i>
                 </div>
                 <div>
-                  <h2 class="text-2xl font-bold text-gray-900">Master Power</h2>
-                  <p class="text-sm text-gray-600">Control all systems at once</p>
+                  <h2 class="text-2xl font-bold text-gray-900">总控 (Master)</h2>
+                  <p class="text-sm text-gray-600">控制所有照明系统</p>
                 </div>
               </div>
               
-              <!-- Custom Switch -->
-              <div onclick="toggleMaster()" class="relative w-20 h-10 bg-white/40 rounded-full cursor-pointer p-1 shadow-inner overflow-hidden border border-white/20">
-                <div id="master-switch" class="switch-knob w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-[10px] font-bold text-gray-600">
-                  OFF
-                </div>
+              <!-- Master Buttons -->
+              <div class="flex items-center gap-3">
+                <button onclick="turnAllOn()" class="px-6 py-2.5 bg-[#2096f3] hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-blue-400">
+                  <i data-lucide="sun" class="w-5 h-5"></i> 全亮
+                </button>
+                <button onclick="turnAllOff()" class="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-gray-400">
+                  <i data-lucide="moon" class="w-5 h-5"></i> 全暗
+                </button>
               </div>
             </div>
           </div>
