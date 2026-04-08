@@ -70,19 +70,16 @@ function initialRender() {
   state.toggleItems.forEach((item, index) => {
     const delay = 0.1 + (state.dualItems.length + index) * 0.05;
     const html = `
-      <div class="glass-card p-6 flex items-center justify-between transition-all duration-300 hover:bg-white/40 group" 
-           style="animation: fadeInUp 0.5s ease-out ${delay}s forwards; opacity: 0;">
+      <div class="glass-card p-6 flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white/40 group active:scale-95" 
+           style="animation: fadeInUp 0.5s ease-out ${delay}s forwards; opacity: 0;"
+           onclick="toggleSingle('${item.id}')"
+           id="card-${item.id}">
         <div class="flex items-center gap-4">
           <div id="icon-${item.id}" class="icon-wrapper p-3 rounded-2xl">
             <i data-lucide="${item.icon}"></i>
           </div>
-          <span class="text-lg font-semibold text-gray-800 tracking-tight">${item.label}</span>
+          <span id="text-${item.id}" class="text-lg font-semibold tracking-tight transition-colors duration-300">${item.label}</span>
         </div>
-        
-        <button id="btn-${item.id}" onclick="toggleSingle('${item.id}')" 
-             class="w-[72px] py-1.5 rounded-full font-bold transition-all duration-300 active:scale-95">
-          关
-        </button>
       </div>
     `;
     controlGrid.insertAdjacentHTML('beforeend', html);
@@ -126,16 +123,14 @@ function updateUI() {
 
   state.toggleItems.forEach(item => {
     const iconEl = document.getElementById(`icon-${item.id}`);
-    const btnEl = document.getElementById(`btn-${item.id}`);
+    const textEl = document.getElementById(`text-${item.id}`);
 
     if (item.isOn) {
       iconEl.className = 'icon-wrapper p-3 rounded-2xl bg-green-500/20 text-green-600';
-      btnEl.className = 'w-[72px] py-1.5 rounded-full font-bold transition-all duration-300 active:scale-95 bg-green-500 text-white shadow-md';
-      btnEl.innerText = '开';
+      textEl.className = 'text-lg font-semibold tracking-tight transition-colors duration-300 text-green-600';
     } else {
       iconEl.className = 'icon-wrapper p-3 rounded-2xl bg-white/40 text-gray-600';
-      btnEl.className = 'w-[72px] py-1.5 rounded-full font-bold transition-all duration-300 active:scale-95 bg-white/40 text-gray-600 border border-white/20';
-      btnEl.innerText = '关';
+      textEl.className = 'text-lg font-semibold tracking-tight transition-colors duration-300 text-gray-800';
     }
   });
 }
