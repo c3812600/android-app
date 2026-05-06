@@ -63,27 +63,20 @@ jobs:
     - name: Find and package IPA
       run: |
         cd ios/App
-        # Find the built .app file in the build directory
+        # Find the built .app file
         APP_PATH=$(find build -name "*.app" -type d 2>/dev/null | head -1)
         echo "Found app at: $APP_PATH"
         
         if [ -z "$APP_PATH" ]; then
-          echo "Error: No .app file found in build directory"
-          echo "Contents of build directory:"
-          find build -type f -name "*.app" 2>/dev/null || echo "No .app files found"
-          ls -la build/ 2>/dev/null || echo "No build directory"
+          echo "Error: No .app file found"
           exit 1
         fi
         
         # Create IPA structure
-        cd /Users/jinsongchen/Downloads/android-app
-        mkdir -p ipa/Payload
-        cp -r "ios/App/$APP_PATH" ipa/Payload/
-
-    - name: Create IPA file
-      run: |
-        cd ipa
-        zip -r ../ZKMODELS.ipa Payload
+        mkdir -p /tmp/ipa/Payload
+        cp -r "$APP_PATH" /tmp/ipa/Payload/
+        cd /tmp/ipa
+        zip -r "${GITHUB_WORKSPACE}/ZKMODELS.ipa" Payload
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
