@@ -69,38 +69,3 @@ jobs:
       with:
         name: android-apk
         path: android/app/build/outputs/apk/debug/*.apk
-
-  export_ios_project:
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Export iOS project
-      shell: bash
-      run: |
-        set -e
-        npx cap add ios || true
-        mkdir -p resources
-        if [ ! -f resources/icon.png ] && [ ! -f resources/icon.svg ] && [ -f resources/ico.svg ]; then cp resources/ico.svg resources/icon.svg; fi
-        npx capacitor-assets generate --ios || true
-        npx cap sync ios
-        INFO_PLIST="ios/App/App/Info.plist"
-        /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity" "$INFO_PLIST" || true
-        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$INFO_PLIST"
-        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$INFO_PLIST"
-        xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
-
-    - name: Upload iOS project
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-xcode-project
-        path: ios
