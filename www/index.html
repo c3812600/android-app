@@ -10,18 +10,18 @@
   <script src="assets/js/websocket.js"></script>
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body class="min-h-screen w-full bg-black bg-cover bg-center bg-no-repeat flex items-center justify-center p-8 font-sans">
+<body class="min-h-screen w-full bg-black bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 sm:p-8 font-sans">
   
   <!-- Overlay to ensure readability -->
   <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
 
-  <div class="relative w-full max-w-7xl z-10 flex flex-col gap-8">
+  <div class="relative w-full max-w-7xl z-10 flex flex-col gap-4 sm:gap-8">
     
     <!-- Header Section -->
     <div class="w-full flex justify-center fade-in" style="animation: fadeInDown 0.5s ease-out forwards;">
-      <div class="glass-card px-16 py-8">
+      <div class="glass-card px-6 py-4 sm:px-16 sm:py-8">
         <div class="flex items-center justify-center gap-3">
-          <h1 class="text-4xl font-bold text-gray-900 tracking-tighter text-center">
+          <h1 class="text-2xl sm:text-4xl font-bold text-gray-900 tracking-tighter text-center">
             南京路一号
           </h1>
           <span id="headerConnectionStatus" class="inline-flex h-3 w-3 rounded-full bg-amber-500" aria-label="连接中"></span>
@@ -31,8 +31,8 @@
 
     <!-- Main Control Panel -->
     <div class="w-full fade-in" style="animation: zoomIn 0.5s ease-out 0.1s forwards; opacity: 0;">
-      <div class="glass-card p-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="control-grid">
+      <div class="glass-card p-4 sm:p-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6" id="control-grid">
           
           <!-- Master Power Switch -->
           <div class="lg:col-span-3 mb-4">

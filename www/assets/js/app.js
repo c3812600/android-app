@@ -16,24 +16,24 @@ const controlGrid = document.getElementById('control-grid');
 
 function initialRender() {
   controlGrid.innerHTML = `
-    <div class="lg:col-span-3 mb-4" style="animation: fadeInUp 0.5s ease-out 0s forwards; opacity: 0;">
-      <div class="flex items-center justify-between bg-white/20 p-6 rounded-3xl border border-white/30">
-        <div class="flex items-center gap-4">
-          <div id="master-icon" class="icon-wrapper p-4 rounded-2xl">
-            <i data-lucide="power" class="w-8 h-8"></i>
+    <div class="sm:col-span-2 lg:col-span-3 mb-2 sm:mb-4" style="animation: fadeInUp 0.5s ease-out 0s forwards; opacity: 0;">
+      <div class="master-control flex flex-col sm:flex-row items-center justify-between bg-white/20 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/30 gap-4">
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div id="master-icon" class="icon-wrapper p-3 sm:p-4 rounded-2xl">
+            <i data-lucide="power" class="w-6 h-6 sm:w-8 sm:h-8"></i>
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-gray-900">总控 (Master)</h2>
-            <p class="text-sm text-gray-600">控制所有照明系统</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">总控 (Master)</h2>
+            <p class="text-xs sm:text-sm text-gray-600">控制所有照明系统</p>
           </div>
         </div>
         
-        <div class="flex items-center gap-3">
-          <button onclick="turnAllOn()" class="px-6 py-2.5 bg-[#2096f3] hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-blue-400">
-            <i data-lucide="sun" class="w-5 h-5"></i> 全亮
+        <div class="master-buttons flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center">
+          <button onclick="turnAllOn()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-[#2096f3] hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 border border-blue-400">
+            <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5"></i> 全亮
           </button>
-          <button onclick="turnAllOff()" class="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 border border-gray-400">
-            <i data-lucide="moon" class="w-5 h-5"></i> 全暗
+          <button onclick="turnAllOff()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 border border-gray-400">
+            <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5"></i> 全暗
           </button>
         </div>
       </div>
@@ -43,13 +43,13 @@ function initialRender() {
   state.dualItems.forEach((item, index) => {
     const delay = 0.1 + index * 0.05;
     const html = `
-      <div class="glass-card p-6 flex items-center justify-between transition-all duration-300 hover:bg-white/40 group" 
+      <div class="glass-card control-card p-3 sm:p-6 flex items-center justify-between transition-all duration-300 hover:bg-white/40 group" 
            style="animation: fadeInUp 0.5s ease-out ${delay}s forwards; opacity: 0;">
         <div class="flex items-center gap-4">
           <div id="icon-${item.id}" class="icon-wrapper p-3 rounded-2xl">
             <i data-lucide="${item.icon}"></i>
           </div>
-          <span class="text-lg font-semibold text-gray-800 tracking-tight">${item.label}</span>
+          <span class="text-sm sm:text-lg font-semibold text-gray-800 tracking-tight">${item.label}</span>
         </div>
         
         <div id="switch-container-${item.id}" onclick="toggleDual('${item.id}')" 
@@ -70,7 +70,7 @@ function initialRender() {
   state.toggleItems.forEach((item, index) => {
     const delay = 0.1 + (state.dualItems.length + index) * 0.05;
     const html = `
-      <div class="glass-card p-6 flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white/40 group active:scale-95" 
+      <div class="glass-card control-card p-3 sm:p-6 flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white/40 group active:scale-95" 
            style="animation: fadeInUp 0.5s ease-out ${delay}s forwards; opacity: 0;"
            onclick="toggleSingle('${item.id}')"
            id="card-${item.id}">
@@ -78,7 +78,7 @@ function initialRender() {
           <div id="icon-${item.id}" class="icon-wrapper p-3 rounded-2xl">
             <i data-lucide="${item.icon}"></i>
           </div>
-          <span id="text-${item.id}" class="text-lg font-semibold tracking-tight transition-colors duration-300">${item.label}</span>
+          <span id="text-${item.id}" class="text-sm sm:text-lg font-semibold tracking-tight transition-colors duration-300">${item.label}</span>
         </div>
       </div>
     `;
