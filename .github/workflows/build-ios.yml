@@ -1,0 +1,69 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Add iOS platform
+      run: npx cap add ios || true
+
+    - name: Generate app icons
+      run: |
+        mkdir -p resources
+        if [ ! -f resources/icon.png ] && [ ! -f resources/icon.svg ] && [ -f resources/ico.svg ]; then
+          cp resources/ico.svg resources/icon.svg
+        fi
+        npx capacitor-assets generate --ios || true
+
+    - name: Sync iOS project
+      run: npx cap sync ios
+
+    - name: Configure Info.plist
+      run: |
+        INFO_PLIST="ios/App/App/Info.plist"
+        /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity" "$INFO_PLIST" || true
+        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$INFO_PLIST"
+        /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$INFO_PLIST"
+
+    - name: Build iOS App
+      run: |
+        cd ios/App
+        xcodebuild -workspace App.xcworkspace \
+          -scheme App \
+          -configuration Debug \
+          -sdk iphonesimulator \
+          -destination 'generic/platform=iOS Simulator' \
+          CODE_SIGNING_ALLOWED=NO \
+          build
+
+    - name: Create IPA directory structure
+      run: |
+        mkdir -p ipa/Payload
+        cp -r ios/App/build/Release-iphonesimulator/App.app ipa/Payload/
+
+    - name: Create IPA file
+      run: |
+        cd ipa
+        zip -r ../ZKMODELS.ipa Payload
+
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-ipa
+        path: ZKMODELS.ipa
