@@ -51,29 +51,34 @@ jobs:
     - name: Build iOS App
       run: |
         cd ios/App
-        xcodebuild -workspace App.xcworkspace \
+        xcodebuild clean build \
+          -workspace App.xcworkspace \
           -scheme App \
           -configuration Debug \
           -sdk iphonesimulator \
           -destination 'generic/platform=iOS Simulator' \
           CODE_SIGNING_ALLOWED=NO \
-          build
+          SYMROOT=$(pwd)/build
 
     - name: Find and package IPA
       run: |
-        # Find the built .app file
-        APP_PATH=$(find ios -name "*.app" -type d | head -1)
+        cd ios/App
+        # Find the built .app file in the build directory
+        APP_PATH=$(find build -name "*.app" -type d 2>/dev/null | head -1)
         echo "Found app at: $APP_PATH"
         
         if [ -z "$APP_PATH" ]; then
-          echo "Error: No .app file found"
-          find ios -name "*.app" -type d
+          echo "Error: No .app file found in build directory"
+          echo "Contents of build directory:"
+          find build -type f -name "*.app" 2>/dev/null || echo "No .app files found"
+          ls -la build/ 2>/dev/null || echo "No build directory"
           exit 1
         fi
         
         # Create IPA structure
+        cd /Users/jinsongchen/Downloads/android-app
         mkdir -p ipa/Payload
-        cp -r "$APP_PATH" ipa/Payload/
+        cp -r "ios/App/$APP_PATH" ipa/Payload/
 
     - name: Create IPA file
       run: |
