@@ -2,9 +2,5 @@
 Thumbs.db
 node_modules/
 android/
-ios/App/Pods/
-ios/App/build/
-ios/App/DerivedData/
+ios/
 .capacitor/
-*.xcworkspace
-*.xcodeproj

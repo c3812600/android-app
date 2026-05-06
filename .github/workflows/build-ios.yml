@@ -20,8 +20,10 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Add iOS platform
-      run: npx cap add ios || true
+    - name: Clean iOS platform
+      run: |
+        rm -rf ios
+        npx cap add ios
 
     - name: Generate app icons
       run: |
@@ -40,6 +42,11 @@ jobs:
         /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity" "$INFO_PLIST" || true
         /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$INFO_PLIST"
         /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$INFO_PLIST"
+
+    - name: Install CocoaPods
+      run: |
+        cd ios/App
+        pod install
 
     - name: Build iOS App
       run: |
