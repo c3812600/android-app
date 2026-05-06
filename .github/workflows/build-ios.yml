@@ -59,10 +59,21 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           build
 
-    - name: Create IPA directory structure
+    - name: Find and package IPA
       run: |
+        # Find the built .app file
+        APP_PATH=$(find ios -name "*.app" -type d | head -1)
+        echo "Found app at: $APP_PATH"
+        
+        if [ -z "$APP_PATH" ]; then
+          echo "Error: No .app file found"
+          find ios -name "*.app" -type d
+          exit 1
+        fi
+        
+        # Create IPA structure
         mkdir -p ipa/Payload
-        cp -r ios/App/build/Release-iphonesimulator/App.app ipa/Payload/
+        cp -r "$APP_PATH" ipa/Payload/
 
     - name: Create IPA file
       run: |
